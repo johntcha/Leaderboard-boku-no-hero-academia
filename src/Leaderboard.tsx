@@ -69,7 +69,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     // Recalculating every intervalValue (1000 by default) mss
-    const interval = setInterval(() => {
+    const updateCharacterData = () => {
       setCharacterData((prevValue) => {
         let mockApiCharacterDataUpdated = [...prevValue];
         const randomSelectedPosition = Math.floor(
@@ -80,6 +80,7 @@ const Leaderboard = () => {
         const sortedCharacterArray = [...mockApiCharacterDataUpdated].sort(
           (a, b) => b.points - a.points
         );
+        // update rank and translateY properties without changing the order of the original array
         for (const [
           index,
           character,
@@ -88,16 +89,15 @@ const Leaderboard = () => {
             sortedCharacterArray.findIndex(
               (sortedCharacter) => sortedCharacter.name === character.name
             ) + 1;
+          const rankDifference = Math.abs(index + 1 - currentRank);
           if (index + 1 > currentRank) {
-            // characterCardHeight + 16px for the gap between the cards * the difference of rank difference
+            // characterCardHeight + 16px for the gap between the cards * rank difference
             character.translateY = `translateY(-${
-              (characterCardRef.current.clientHeight + 16) *
-              Math.abs(index + 1 - currentRank)
+              (characterCardRef.current.clientHeight + 16) * rankDifference
             }px)`;
           } else if (index + 1 < currentRank) {
             character.translateY = `translateY(${
-              (characterCardRef.current.clientHeight + 16) *
-              Math.abs(index + 1 - currentRank)
+              (characterCardRef.current.clientHeight + 16) * rankDifference
             }px)`;
           } else {
             character.translateY = "";
@@ -106,6 +106,9 @@ const Leaderboard = () => {
         }
         return mockApiCharacterDataUpdated;
       });
+    };
+    const interval = setInterval(() => {
+      updateCharacterData();
     }, intervalValue);
 
     //Clearing the interval
