@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PlayerCard from "./PlayerCard";
 import { Character } from "./type";
 
@@ -65,14 +65,7 @@ const Leaderboard = () => {
   const [characterData, setCharacterData] =
     useState<Character[]>(mockApiCharacterData);
   const [intervalValue, setIntervalValue] = useState<number>(2000);
-  // const [characterCardHeight, setCharacterCardHeight] = useState<number>(0);
-  // const characterCardRef = useRef<any>(null);
-
-  // useLayoutEffect(() => {
-  //   if (characterCardRef.current && !characterCardHeight) {
-  //     setCharacterCardHeight(characterCardRef.current.clientHeight);
-  //   }
-  // }, []);
+  const characterCardRef = useRef<any>(null);
 
   useEffect(() => {
     // Recalculating every intervalValue (1000 by default) mss
@@ -96,13 +89,15 @@ const Leaderboard = () => {
               (sortedCharacter) => sortedCharacter.name === character.name
             ) + 1;
           if (index + 1 > currentRank) {
-            // characterCardHeight (64) + 16px for the gap between the cards * the difference of rank difference
+            // characterCardHeight + 16px for the gap between the cards * the difference of rank difference
             character.translateY = `translateY(-${
-              80 * Math.abs(index + 1 - currentRank)
+              (characterCardRef.current.clientHeight + 16) *
+              Math.abs(index + 1 - currentRank)
             }px)`;
           } else if (index + 1 < currentRank) {
             character.translateY = `translateY(${
-              80 * Math.abs(index + 1 - currentRank)
+              (characterCardRef.current.clientHeight + 16) *
+              Math.abs(index + 1 - currentRank)
             }px)`;
           } else {
             character.translateY = "";
@@ -121,13 +116,13 @@ const Leaderboard = () => {
     <div className="flex flex-col items-center bg-cool-background bg-cover bg-center bg-no-repeat min-h-screen p-8 gap-8">
       <p className="text-6xl text-white">Leaderboard</p>
       <div className="flex flex-col items-center bg-violet-900 w-6/12 max-w-screen-sm rounded p-8 gap-4 shadow-2xl">
-        {characterData.map((character) => {
+        {characterData.map((character, index) => {
           return (
             <PlayerCard
               key={`${character.name}`}
               character={character}
               //only ref the first card to avoid unnecessary re-renders and state updates
-              // ref={index === 0 ? characterCardRef : null}
+              ref={index === 0 ? characterCardRef : null}
             />
           );
         })}
