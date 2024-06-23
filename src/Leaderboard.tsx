@@ -68,49 +68,52 @@ const Leaderboard = () => {
   const [intervalValue, setIntervalValue] = useState<number>(2000);
   const [minPointValue, setMinPointValue] = useState<number>(0);
   const [maxPointValue, setMaxPointValue] = useState<number>(100);
-  const characterCardRef = useRef<any>(null);
+  const characterCardRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Recalculating every intervalValue (1000 by default) mss
     const updateCharacterData = () => {
-      setCharacterData((prevValue) => {
-        let mockApiCharacterDataUpdated = [...prevValue];
-        const randomSelectedPosition = Math.floor(
-          Math.random() * mockApiCharacterDataUpdated.length
-        );
-        mockApiCharacterDataUpdated[randomSelectedPosition].points +=
-          Math.floor(
-            Math.random() * (maxPointValue - minPointValue) + minPointValue
+      const height = characterCardRef.current?.clientHeight;
+      if (height) {
+        setCharacterData((prevValue) => {
+          let mockApiCharacterDataUpdated = [...prevValue];
+          const randomSelectedPosition = Math.floor(
+            Math.random() * mockApiCharacterDataUpdated.length
           );
-        const sortedCharacterArray = [...mockApiCharacterDataUpdated].sort(
-          (a, b) => b.points - a.points
-        );
-        // update rank and translateY properties without changing the order of the original array
-        for (const [
-          index,
-          character,
-        ] of mockApiCharacterDataUpdated.entries()) {
-          const currentRank =
-            sortedCharacterArray.findIndex(
-              (sortedCharacter) => sortedCharacter.name === character.name
-            ) + 1;
-          const rankDifference = Math.abs(index + 1 - currentRank);
-          if (index + 1 > currentRank) {
-            // characterCardHeight + 16px for the gap between the cards * rank difference
-            character.translateY = `translateY(-${
-              (characterCardRef.current.clientHeight + 16) * rankDifference
-            }px)`;
-          } else if (index + 1 < currentRank) {
-            character.translateY = `translateY(${
-              (characterCardRef.current.clientHeight + 16) * rankDifference
-            }px)`;
-          } else {
-            character.translateY = "";
+          mockApiCharacterDataUpdated[randomSelectedPosition].points +=
+            Math.floor(
+              Math.random() * (maxPointValue - minPointValue) + minPointValue
+            );
+          const sortedCharacterArray = [...mockApiCharacterDataUpdated].sort(
+            (a, b) => b.points - a.points
+          );
+          // update rank and translateY properties without changing the order of the original array
+          for (const [
+            index,
+            character,
+          ] of mockApiCharacterDataUpdated.entries()) {
+            const currentRank =
+              sortedCharacterArray.findIndex(
+                (sortedCharacter) => sortedCharacter.name === character.name
+              ) + 1;
+            const rankDifference = Math.abs(index + 1 - currentRank);
+            if (index + 1 > currentRank) {
+              // characterCardHeight + 16px for the gap between the cards * rank difference
+              character.translateY = `translateY(-${
+                (height + 16) * rankDifference
+              }px)`;
+            } else if (index + 1 < currentRank) {
+              character.translateY = `translateY(${
+                (height + 16) * rankDifference
+              }px)`;
+            } else {
+              character.translateY = "";
+            }
+            character.rank = currentRank;
           }
-          character.rank = currentRank;
-        }
-        return mockApiCharacterDataUpdated;
-      });
+          return mockApiCharacterDataUpdated;
+        });
+      }
     };
     const interval = setInterval(() => {
       updateCharacterData();
