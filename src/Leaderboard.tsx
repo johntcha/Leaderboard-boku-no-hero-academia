@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PlayerCard from "./PlayerCard";
 import { Character } from "./type";
+import InputNumberValue from "./InputNumberValue";
 
 let mockApiCharacterData: Character[] = [
   {
@@ -65,6 +66,8 @@ const Leaderboard = () => {
   const [characterData, setCharacterData] =
     useState<Character[]>(mockApiCharacterData);
   const [intervalValue, setIntervalValue] = useState<number>(2000);
+  const [minPointValue, setMinPointValue] = useState<number>(0);
+  const [maxPointValue, setMaxPointValue] = useState<number>(100);
   const characterCardRef = useRef<any>(null);
 
   useEffect(() => {
@@ -76,7 +79,9 @@ const Leaderboard = () => {
           Math.random() * mockApiCharacterDataUpdated.length
         );
         mockApiCharacterDataUpdated[randomSelectedPosition].points +=
-          Math.floor(Math.random() * 100);
+          Math.floor(
+            Math.random() * (maxPointValue - minPointValue) + minPointValue
+          );
         const sortedCharacterArray = [...mockApiCharacterDataUpdated].sort(
           (a, b) => b.points - a.points
         );
@@ -113,11 +118,11 @@ const Leaderboard = () => {
 
     //Clearing the interval
     return () => clearInterval(interval);
-  }, [intervalValue]);
+  }, [intervalValue, maxPointValue, minPointValue]);
 
   return (
     <div className="flex flex-col items-center bg-cool-background bg-cover bg-center bg-no-repeat min-h-screen p-8 gap-8">
-      <p className="text-6xl text-white">Leaderboard</p>
+      <p className="text-5xl text-white">Leaderboard</p>
       <div className="flex flex-col items-center bg-violet-900 w-6/12 max-w-screen-sm rounded p-8 gap-4 shadow-2xl">
         {characterData.map((character, index) => {
           return (
@@ -129,6 +134,23 @@ const Leaderboard = () => {
             />
           );
         })}
+      </div>
+      <div className="flex gap-6">
+        <InputNumberValue
+          label="Min points"
+          value={minPointValue}
+          onValueChange={setMinPointValue}
+        />
+        <InputNumberValue
+          label="Max points"
+          value={maxPointValue}
+          onValueChange={setMaxPointValue}
+        />
+        <InputNumberValue
+          label="Interval time (ms)"
+          value={intervalValue}
+          onValueChange={setIntervalValue}
+        />
       </div>
     </div>
   );
