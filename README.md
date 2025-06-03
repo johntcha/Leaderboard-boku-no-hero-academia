@@ -1,4 +1,4 @@
-# Leaderboard for the Quollio frontend assignment
+# Leaderboard 僕のヒーローアカデミア
 
 ![Leaderboard](https://github.com/johntcha/quollio-frontend-assignment-leaderboard/blob/main/public/images/leaderboard.png)
 
